@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "@types/hapi": "^18.0.7",
+    "@types/joi": "^17.2.3",
     "@types/node": "^8.0.29",
     "nodemon": "^2.0.15",
     "ts-node": "3.3.0",
@@ -19,6 +20,7 @@
   },
   "dependencies": {
     "@hapi/hapi": "^20.2.1",
+    "joi": "^17.5.0",
     "pg": "^8.7.1",
     "reflect-metadata": "^0.1.10",
     "typeorm": "0.2.41"

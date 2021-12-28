@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 
-@Entity()
+@Entity("favored")
 export class FavoredEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
@@ -16,10 +16,17 @@ export class FavoredEntity {
   name: string;
 
   @Column()
-  document: string;
+  email: string;
+
+  // ????
+  @Column()
+  status: FavoredStatus;
 
   @Column()
   documentType: DocumentType;
+
+  @Column()
+  document: string;
 
   //audit
   @CreateDateColumn()
@@ -32,7 +39,12 @@ export class FavoredEntity {
   deletedAt: string;
 }
 
-enum DocumentType {
+export enum DocumentType {
   CNPJ = "CNPJ",
   CPF = "CPF",
+}
+
+export enum FavoredStatus {
+  SKETCH = "SKETCH",
+  VALIDATE = "VALIDATE",
 }
