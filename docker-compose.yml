@@ -1,0 +1,18 @@
+version: "3.5"
+
+services:
+  test-bank-postgres:
+    image: postgres:12-alpine
+    container_name: test-bank-pgdb
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "@changeme"
+      PGDATA: /data/test-bank-postgres
+      DB_EXTENSION: "uuid-ossp"
+    volumes:
+      - test-bank-postgres:/data/postgres
+    ports:
+      - "5454:5432"
+
+volumes:
+  test-bank-postgres:

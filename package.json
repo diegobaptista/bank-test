@@ -1,0 +1,26 @@
+{
+  "name": "test-bank",
+  "version": "1.0.0",
+  "description": "test-bank",
+  "main": "index.js",
+  "author": "Diego Luiz Dassi Baptista",
+  "license": "MIT",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "compile": "tsc && node ./dist/index.js",
+    "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js --config src/database/config/orm-config.ts"
+  },
+  "devDependencies": {
+    "@types/hapi": "^18.0.7",
+    "@types/node": "^8.0.29",
+    "nodemon": "^2.0.15",
+    "ts-node": "3.3.0",
+    "typescript": "3.3.3333"
+  },
+  "dependencies": {
+    "@hapi/hapi": "^20.2.1",
+    "pg": "^8.7.1",
+    "reflect-metadata": "^0.1.10",
+    "typeorm": "0.2.41"
+  }
+}
