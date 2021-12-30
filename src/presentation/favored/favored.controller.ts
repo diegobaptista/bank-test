@@ -8,7 +8,7 @@ import {
   favoredCreateValidationSchema,
 } from "./favored-create.dto";
 
-export const favoredConstroller = (): Array<ServerRoute> => {
+export const favoredController = (): Array<ServerRoute> => {
   const service = favoredService();
 
   return [
@@ -34,6 +34,9 @@ export const favoredConstroller = (): Array<ServerRoute> => {
         tags: ["api"],
         validate: {
           payload: favoredCreateValidationSchema,
+          failAction(request: Request, h: ResponseToolkit, err?: Error) {
+            throw err;
+          },
         },
       },
     },

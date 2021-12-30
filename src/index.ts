@@ -1,10 +1,13 @@
-import { Server, Request, ResponseToolkit, Plugin } from "@hapi/hapi";
+import { Server } from "@hapi/hapi";
 
 import Inert from "@hapi/inert";
 import Vision from "@hapi/vision";
+import Jwt from "@hapi/jwt";
 import { connect } from "./infrastructure/database/config/connection";
-import swagger from "./infrastructure/swagger";
-import { constrollers } from "./presentation/routes";
+import Swagger from "./infrastructure/swagger";
+import { controllers } from "./presentation/routes";
+import dotenv from "dotenv";
+dotenv.config();
 
 const init = async () => {
   const server: Server = new Server({
@@ -14,7 +17,7 @@ const init = async () => {
 
   await connect();
 
-  const plugins: any[] = [Inert, Vision, swagger];
+  const plugins: any[] = [Jwt, Inert, Vision, Swagger];
 
   await server.register(plugins);
 
@@ -25,12 +28,32 @@ const init = async () => {
     console.log(err);
   }
 
-  const routes = constrollers.reduce((accRoutes, controller) => {
+  const routes = controllers.reduce((accRoutes, controller) => {
     accRoutes.push(...controller());
     return accRoutes;
   }, []);
 
+  server.auth.strategy("jwt-strategy", "jwt", {
+    keys: process.env.JWT_SECRET,
+    verify: {
+      aud: process.env.JWT_AUDIT,
+      iss: process.env.JWT_ISSUER,
+      sub: false,
+      nbf: true,
+      exp: true,
+      maxAgeSec: process.env.JWT_VALID_IN_SECONDS, // 4 hours
+      timeSkewSec: 15,
+    },
+    validate: (artifacts, request, h) => {
+      return {
+        isValid: true,
+        credentials: { user: artifacts.decoded.payload.user },
+      };
+    },
+  });
+
   server.route(routes);
+  //server.auth.default("jwt-strategy");
 };
 
 process.on("unhandledRejection", (err) => {
