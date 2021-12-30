@@ -53,7 +53,7 @@ const init = async () => {
   });
 
   server.route(routes);
-  //server.auth.default("jwt-strategy");
+  server.auth.default("jwt-strategy");
 };
 
 process.on("unhandledRejection", (err) => {
