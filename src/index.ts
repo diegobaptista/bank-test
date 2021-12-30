@@ -1,6 +1,10 @@
-import { Server, Request, ResponseToolkit } from "@hapi/hapi";
-import { favoredConstroller } from "./app/favored/favored.controller";
-import { connect } from "./database/config/connection";
+import { Server, Request, ResponseToolkit, Plugin } from "@hapi/hapi";
+
+import Inert from "@hapi/inert";
+import Vision from "@hapi/vision";
+import { connect } from "./infrastructure/database/config/connection";
+import swagger from "./infrastructure/swagger";
+import { constrollers } from "./presentation/routes";
 
 const init = async () => {
   const server: Server = new Server({
@@ -8,21 +12,25 @@ const init = async () => {
     host: "localhost",
   });
 
-  const testRoute = {
-    method: "GET",
-    path: "/",
-    handler: (request: Request, h: ResponseToolkit) => {
-      return "Hello World!";
-    },
-  };
+  await connect();
 
-  const connection = await connect();
+  const plugins: any[] = [Inert, Vision, swagger];
 
-  server.route(favoredConstroller(connection));
+  await server.register(plugins);
 
-  await server
-    .start()
-    .then(() => console.log("Server running on %s", server.info.uri));
+  try {
+    await server.start();
+    console.log("Server running at:", server.info.uri);
+  } catch (err) {
+    console.log(err);
+  }
+
+  const routes = constrollers.reduce((accRoutes, controller) => {
+    accRoutes.push(...controller());
+    return accRoutes;
+  }, []);
+
+  server.route(routes);
 };
 
 process.on("unhandledRejection", (err) => {

@@ -7,26 +7,16 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 
-@Entity("favored")
-export class FavoredEntity {
+@Entity("bank")
+export class BankEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column()
+  code: string;
+
+  @Column()
   name: string;
-
-  @Column()
-  email: string;
-
-  // ????
-  @Column()
-  status: FavoredStatus;
-
-  @Column()
-  documentType: DocumentType;
-
-  @Column()
-  document: string;
 
   //audit
   @CreateDateColumn()
@@ -37,14 +27,4 @@ export class FavoredEntity {
 
   @DeleteDateColumn()
   deletedAt: string;
-}
-
-export enum DocumentType {
-  CNPJ = "CNPJ",
-  CPF = "CPF",
-}
-
-export enum FavoredStatus {
-  SKETCH = "SKETCH",
-  VALIDATE = "VALIDATE",
 }
