@@ -2,7 +2,6 @@ import Joi, { ObjectSchema } from "joi";
 import {
   DocumentType,
   FavoredEntity,
-  FavoredStatus,
 } from "../../infrastructure/database/entity/favored.entity";
 
 export class FavoredCreateDto {
@@ -10,7 +9,6 @@ export class FavoredCreateDto {
   documentType: DocumentType;
   document: string;
   email: string;
-  status: FavoredStatus;
 
   static toFavoredEntity(favoredDto: FavoredCreateDto) {
     const favoredEntity = new FavoredEntity();
@@ -18,7 +16,6 @@ export class FavoredCreateDto {
     favoredEntity.documentType = favoredDto.documentType;
     favoredEntity.document = favoredDto.document;
     favoredEntity.email = favoredDto.email;
-    favoredEntity.status = favoredDto.status;
 
     return favoredEntity;
   }

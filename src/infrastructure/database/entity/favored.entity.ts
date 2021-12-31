@@ -23,10 +23,6 @@ export class FavoredEntity {
   @OneToMany(() => FavoredAccountEntity, (account) => account.owner)
   accounts: FavoredAccountEntity;
 
-  // ????
-  @Column()
-  status: FavoredStatus;
-
   @Column()
   documentType: DocumentType;
 
@@ -47,9 +43,4 @@ export class FavoredEntity {
 export enum DocumentType {
   CNPJ = "CNPJ",
   CPF = "CPF",
-}
-
-export enum FavoredStatus {
-  SKETCH = "SKETCH",
-  VALIDATE = "VALIDATE",
 }
