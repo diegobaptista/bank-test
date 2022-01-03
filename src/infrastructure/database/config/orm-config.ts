@@ -1,6 +1,18 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+const sslConfig =
+  process.env.NODE_ENV === "local"
+    ? {}
+    : {
+        ssl: true,
+        extra: {
+          ssl: {
+            rejectUnauthorized: false,
+          },
+        },
+      };
+
 const ormConfig = {
   type: "postgres",
   host: process.env.DATABASE_HOST,
@@ -15,6 +27,12 @@ const ormConfig = {
   cli: {
     entitiesDir: "src/infrastructure/database/entity",
     migrationsDir: "src/infrastructure/database/migration",
+  },
+  ssl: true,
+  extra: {
+    ssl: {
+      rejectUnauthorized: false,
+    },
   },
 };
 
