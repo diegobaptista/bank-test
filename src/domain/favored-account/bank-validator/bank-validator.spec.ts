@@ -125,3 +125,34 @@ describe("AccountType Validator", () => {
     expect(result).toBeFalsy();
   });
 });
+
+describe("Validate Field", () => {
+  it("should return positive to field validation", () => {
+    const validator = new BankValidator(null);
+    const result = validator.validateField(
+      "44448888",
+      /^(?:^0*)[1-9][0-9]{0,7}$/,
+      true
+    );
+    expect(result).toBeTruthy();
+  });
+  it("should return positive to missing field and not required", () => {
+    const validator = new BankValidator(null);
+    const result = validator.validateField(
+      undefined,
+      /^(?:^0*)[1-9][0-9]{0,7}$/,
+      false
+    );
+    expect(result).toBeTruthy();
+  });
+
+  it("should return negative to missing field and required", () => {
+    const validator = new BankValidator(null);
+    const result = validator.validateField(
+      undefined,
+      /^(?:^0*)[1-9][0-9]{0,7}$/,
+      true
+    );
+    expect(result).toBeFalsy();
+  });
+});

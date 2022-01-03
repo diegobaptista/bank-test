@@ -5,44 +5,59 @@ export class BankValidator {
   private rule;
 
   constructor(public bankContext: BankContextValidator) {
-    const { bankCode } = this.bankContext;
+    const { bankCode } = this.bankContext ?? {};
     const correctRule = bankRules.find((rule) => rule.bankCode === bankCode);
     this.rule = correctRule;
     if (!correctRule) this.rule = defaultRule;
+  }
+
+  validate() {
+    const isAgencyValid = this.validateAgency();
+    const isAccountValid = this.validateAccount();
+    const isAccountTypeValid = this.validateAccountType();
+
+    console.log(isAgencyValid, isAccountValid, isAccountTypeValid);
+
+    return isAgencyValid && isAccountValid && isAccountTypeValid;
   }
 
   validateAgency() {
     const { agencyCode } = this.bankContext;
 
     const [code, digit] = agencyCode.split("-");
+    const { pattern: digitPattern, required: digitRequired } =
+      this.rule.agency.digit;
 
-    const codePattern = this.rule.agency.pattern;
-    const digitPatern = this.rule.agency.digit.pattern;
+    const { pattern: codePattern, required: codeRequired } = this.rule.agency;
 
-    ///////////////////////////////////////////
-    const isDigitRequired = this.rule.agency.pattern.required;
+    const isCodeValid = this.validateField(code, codePattern, codeRequired);
+    const isDigitValid = this.validateField(digit, digitPattern, digitRequired);
 
-    const isCodeMatching = codePattern.test(code);
-    const isDigitMatching = digitPatern.test(digit);
-
-    return isCodeMatching && isDigitMatching;
+    return isCodeValid && isDigitValid;
   }
 
   validateAccount() {
     const { accountCode } = this.bankContext;
 
     const [code, digit] = accountCode.split("-");
+    const { pattern: digitPattern, required: digitRequired } =
+      this.rule.account.digit;
 
-    const codePattern = this.rule.account.pattern;
-    const digitPatern = this.rule.account.digit.pattern;
+    const { pattern: codePattern, required: codeRequired } = this.rule.account;
 
-    ///////////////////////////////////////////
-    const isDigitRequired = this.rule.account.pattern.required;
+    const isCodeValid = this.validateField(code, codePattern, codeRequired);
+    const isDigitValid = this.validateField(digit, digitPattern, digitRequired);
 
-    const isCodeMatching = codePattern.test(code);
-    const isDigitMatching = digitPatern.test(digit);
+    return isCodeValid && isDigitValid;
+  }
 
-    return isCodeMatching && isDigitMatching;
+  validateField(field: string, pattern: RegExp, required = true) {
+    if (field) {
+      const isPatternMatching = pattern.test(field);
+      return isPatternMatching;
+    }
+    const isOptional = !required;
+    return isOptional;
   }
 
   validateAccountType() {
@@ -50,11 +65,6 @@ export class BankValidator {
 
     const allowedTypes: [] = this.rule.accountType.allowedTypes;
 
-    console.log(
-      allowedTypes,
-      accountType,
-      allowedTypes.some((type) => type === accountType)
-    );
     return allowedTypes.some((type) => type === accountType);
   }
 }

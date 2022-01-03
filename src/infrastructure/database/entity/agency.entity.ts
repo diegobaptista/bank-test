@@ -17,14 +17,14 @@ export class AgencyEntity {
   @Column()
   code: string;
 
-  @Column()
+  @Column({ nullable: true })
   name: string;
+
+  @Column({ nullable: true })
+  address: string;
 
   @ManyToOne(() => BankEntity)
   bank: BankEntity;
-
-  @Column()
-  address: string;
 
   //audit
   @CreateDateColumn()

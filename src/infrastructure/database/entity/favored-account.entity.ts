@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { FavoredAccountCreateDto } from "../../../presentation/favored-account/favored-account-create.dto";
+import { FavoredAccountCreateUpdateDto } from "../../../presentation/favored-account/favored-account-create.dto";
 import { AgencyEntity } from "./agency.entity";
 import { FavoredEntity } from "./favored.entity";
 
@@ -20,7 +20,7 @@ export class FavoredAccountEntity {
   code: string;
 
   @Column()
-  status: FavoredAccountStatus;
+  status: AccountStatus;
 
   @ManyToOne(() => AgencyEntity)
   agency: AgencyEntity;
@@ -42,24 +42,28 @@ export class FavoredAccountEntity {
   deletedAt: string;
 
   static fromFavoredCreateDto(
-    accountDto: FavoredAccountCreateDto,
+    id: string,
+    accountDto: FavoredAccountCreateUpdateDto,
     agency: AgencyEntity,
     favored: FavoredEntity
   ) {
     const { accountCode, accountType } = accountDto;
+    const status = accountDto.status ?? AccountStatus.SKETCH;
 
     const account = new FavoredAccountEntity();
+    account.id = id;
     account.code = accountCode;
-    account.status = FavoredAccountStatus.SKETCH;
+    account.status = AccountStatus.SKETCH;
     account.agency = agency;
     account.owner = favored;
+    account.status = status;
     account.accountType = accountType;
 
     return account;
   }
 }
 
-export enum FavoredAccountStatus {
+export enum AccountStatus {
   SKETCH = "SKETCH",
   VALIDATE = "VALIDATE",
 }

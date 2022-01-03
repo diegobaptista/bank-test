@@ -2,7 +2,7 @@ import { Request, ResponseToolkit, ServerRoute } from "@hapi/hapi";
 import Joi from "joi";
 import { favoredAccountService } from "../../domain/favored-account/favored-account.service";
 import {
-  FavoredAccountCreateDto,
+  FavoredAccountCreateUpdateDto,
   favoredAccountCreateValidationSchema,
 } from "./favored-account-create.dto";
 
@@ -23,10 +23,14 @@ export const favoredAccountController = (): Array<ServerRoute> => {
     {
       method: "POST",
       path: "/favored-account",
-      handler: (request: Request, h: ResponseToolkit, err?: Error) => {
-        const payload = <FavoredAccountCreateDto>request.payload;
-        service.create(payload);
-        return "ok";
+      handler: async (request: Request, h: ResponseToolkit, err?: Error) => {
+        const payload = <FavoredAccountCreateUpdateDto>request.payload;
+        try {
+          await service.create(payload);
+        } catch (err) {
+          return h.response({ error: err.message }).code(406);
+        }
+        return h.response().code(201);
       },
       options: {
         tags: ["api"],
@@ -40,20 +44,29 @@ export const favoredAccountController = (): Array<ServerRoute> => {
     },
     {
       method: "PUT",
-      path: "/favored-account",
-      handler: (request: Request, h: ResponseToolkit, err?: Error) => {
-        console.log(request.payload);
-        return "ok";
+      path: "/favored-account/{id}",
+      handler: async (request: Request, h: ResponseToolkit, err?: Error) => {
+        const payload = <FavoredAccountCreateUpdateDto>request.payload;
+        const id = <string>request.params.id;
+
+        console.log(id);
+        try {
+          await service.update(payload, id);
+        } catch (err) {
+          return h.response({ error: err.message }).code(406);
+        }
+        return h.response().code(201);
       },
       options: {
         tags: ["api"],
         validate: {
-          payload: Joi.object({
-            name: Joi.string().required(),
-            document: Joi.string().required(),
-            email: Joi.string().required(),
-            documentType: Joi.string(),
+          params: Joi.object({
+            id: Joi.string().required(),
           }),
+          payload: favoredAccountCreateValidationSchema,
+          failAction(request: Request, h: ResponseToolkit, err?: Error) {
+            throw err;
+          },
         },
       },
     },
