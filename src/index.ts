@@ -11,11 +11,8 @@ dotenv.config();
 
 const init = async () => {
   const server: Server = new Server({
-    port: process.env.PORT || 5000,
+    port: process.env.PORT || 3000,
   });
-
-  console.log("starting");
-  console.log(process.env.PORT);
 
   await connect();
 
@@ -49,13 +46,13 @@ const init = async () => {
     validate: (artifacts, request, h) => {
       return {
         isValid: true,
-        credentials: { user: artifacts.decoded.payload.user },
+        credentials: { user: artifacts.decoded.payload.sub },
       };
     },
   });
 
   server.route(routes);
-  //server.auth.default("jwt-strategy");
+  server.auth.default("jwt-strategy");
 };
 
 process.on("unhandledRejection", (err) => {

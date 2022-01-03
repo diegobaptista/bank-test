@@ -9,6 +9,14 @@ const swaggerOptions: HapiSwagger.RegisterOptions = {
     version: Package.version,
   },
   schemes: ["http", "https"],
+  securityDefinitions: {
+    jwt: {
+      type: "apiKey",
+      name: "Authorization",
+      in: "header",
+    },
+  },
+  security: [{ jwt: [] }],
 };
 
 export default {
