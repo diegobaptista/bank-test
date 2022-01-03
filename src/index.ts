@@ -11,8 +11,7 @@ dotenv.config();
 
 const init = async () => {
   const server: Server = new Server({
-    port: 3000,
-    host: "localhost",
+    port: process.env.PORT || 3000,
   });
 
   await connect();
