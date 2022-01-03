@@ -7,23 +7,68 @@ import {
 } from "../../infrastructure/database/entity/favored-account.entity";
 import { FavoredEntity } from "../../infrastructure/database/entity/favored.entity";
 import { FavoredAccountCreateUpdateDto } from "../../presentation/favored-account/favored-account-create.dto";
-import { FavoredCreateDto } from "../../presentation/favored/favored-create.dto";
 import { BankValidator } from "./bank-validator/bank-validator";
 
-export const favoredAccountService = () => {
-  const favoredAccountRepository: Repository<FavoredAccountEntity> =
-    getConnection().getRepository(FavoredAccountEntity);
+export class FavoredAccountService {
+  private favoredAccountRepository: Repository<FavoredAccountEntity>;
+  private bankRepository: Repository<BankEntity>;
+  private agencyRepository: Repository<AgencyEntity>;
+  private favoredRepository: Repository<FavoredEntity>;
 
-  const bankRepository: Repository<BankEntity> =
-    getConnection().getRepository(BankEntity);
+  constructor() {
+    this.favoredAccountRepository =
+      getConnection().getRepository(FavoredAccountEntity);
 
-  const agencyRepository: Repository<AgencyEntity> =
-    getConnection().getRepository(AgencyEntity);
+    this.bankRepository = getConnection().getRepository(BankEntity);
 
-  const favoredRepository: Repository<FavoredEntity> =
-    getConnection().getRepository(FavoredEntity);
+    this.agencyRepository = getConnection().getRepository(AgencyEntity);
 
-  const validateBankInput = (
+    this.favoredRepository = getConnection().getRepository(FavoredEntity);
+  }
+
+  find() {
+    return this.favoredAccountRepository.find();
+  }
+
+  async create(favoredAccountDto: FavoredAccountCreateUpdateDto) {
+    this.validateBankInput(favoredAccountDto);
+
+    const account = await this.findAccountByDocumentAgencyBank(
+      favoredAccountDto
+    );
+
+    if (account) {
+      throw new Error(`Account already exists`);
+    }
+
+    this.editAccountAssortmentAndSave(favoredAccountDto);
+  }
+
+  async update(favoredAccountDto: FavoredAccountCreateUpdateDto, id: string) {
+    this.validateBankInput(favoredAccountDto);
+    const account = await this.findAccountByDocumentAgencyBank(
+      favoredAccountDto
+    );
+
+    if (!account) {
+      throw new Error(`Account does not exists`);
+    }
+    if (account.status === AccountStatus.VALIDATE) {
+      throw new Error(`Account with status validated can't be edited`);
+    }
+
+    this.editAccountAssortmentAndSave(favoredAccountDto, id);
+  }
+
+  delete(id: string) {
+    this.favoredAccountRepository.softDelete(id);
+  }
+
+  deleteByManyIds(ids: string[]) {
+    this.favoredAccountRepository.softDelete(ids);
+  }
+
+  private validateBankInput = (
     favoredAccountDto: FavoredAccountCreateUpdateDto
   ) => {
     const { accountCode, accountType, agencyCode, bankCode } =
@@ -41,36 +86,36 @@ export const favoredAccountService = () => {
       throw new Error(`The input is not valid to bank-code: ${bankCode}`);
   };
 
-  const verifyAndCreateAgency = async (
+  private verifyAndCreateAgency = async (
     favoredAccountDto: FavoredAccountCreateUpdateDto,
     bank: BankEntity
   ) => {
     const { bankCode, agencyCode } = favoredAccountDto;
 
-    const agency = await agencyRepository.findOne(
+    const agency = await this.agencyRepository.findOne(
       { code: agencyCode, bank: { code: bankCode } },
       { relations: ["bank"] }
     );
 
     if (!agency) {
-      return agencyRepository.save({ code: agencyCode, bank });
+      return this.agencyRepository.save({ code: agencyCode, bank });
     }
 
     return agency;
   };
 
-  const verifyAndCreateFavoured = async (
+  private async verifyAndCreateFavoured(
     favoredAccountDto: FavoredAccountCreateUpdateDto
-  ) => {
+  ) {
     const { document, documentType, name, email } = favoredAccountDto;
 
-    const favored = await favoredRepository.findOne({
+    const favored = await this.favoredRepository.findOne({
       document,
       documentType,
     });
 
     if (!favored) {
-      return favoredRepository.save({
+      return this.favoredRepository.save({
         id: favored.id,
         document,
         documentType,
@@ -80,37 +125,37 @@ export const favoredAccountService = () => {
     }
 
     return favored;
-  };
+  }
 
-  const findAccountByDocumentAgencyBank = async (
+  private async findAccountByDocumentAgencyBank(
     favoredAccountDto: FavoredAccountCreateUpdateDto
-  ) => {
+  ) {
     const { bankCode, agencyCode, accountCode, document, documentType } =
       favoredAccountDto;
 
-    return await favoredAccountRepository.findOne(
+    return await this.favoredAccountRepository.findOne(
       {
         agency: { code: agencyCode, bank: { code: bankCode } },
         code: accountCode,
       },
       { relations: ["agency", "agency.bank"] }
     );
-  };
+  }
 
-  const editAccountAssortmentAndSave = async (
+  private async editAccountAssortmentAndSave(
     favoredAccountDto: FavoredAccountCreateUpdateDto,
     id?: string
-  ) => {
+  ) {
     const { bankCode } = favoredAccountDto;
-    const bank = await bankRepository.findOne({ code: bankCode });
+    const bank = await this.bankRepository.findOne({ code: bankCode });
 
     if (!bank) {
       throw new Error(`Bank does not exists`);
     }
 
-    const favored = await verifyAndCreateFavoured(favoredAccountDto);
+    const favored = await this.verifyAndCreateFavoured(favoredAccountDto);
 
-    const agency = await verifyAndCreateAgency(favoredAccountDto, bank);
+    const agency = await this.verifyAndCreateAgency(favoredAccountDto, bank);
 
     const accountEntity = FavoredAccountEntity.fromFavoredCreateDto(
       id,
@@ -119,48 +164,6 @@ export const favoredAccountService = () => {
       favored
     );
 
-    favoredAccountRepository.save(accountEntity);
-  };
-
-  return {
-    find() {
-      return favoredAccountRepository.find();
-    },
-
-    async create(favoredAccountDto: FavoredAccountCreateUpdateDto) {
-      validateBankInput(favoredAccountDto);
-
-      const account = await findAccountByDocumentAgencyBank(favoredAccountDto);
-
-      console.log(account);
-
-      if (account) {
-        throw new Error(`Account already exists`);
-      }
-
-      editAccountAssortmentAndSave(favoredAccountDto);
-    },
-
-    async update(favoredAccountDto: FavoredAccountCreateUpdateDto, id: string) {
-      validateBankInput(favoredAccountDto);
-      const account = await findAccountByDocumentAgencyBank(favoredAccountDto);
-
-      if (!account) {
-        throw new Error(`Account does not exists`);
-      }
-      if (account.status === AccountStatus.VALIDATE) {
-        throw new Error(`Account with status validated can't be edited`);
-      }
-
-      editAccountAssortmentAndSave(favoredAccountDto, id);
-    },
-
-    delete(id: string) {
-      favoredAccountRepository.softDelete(id);
-    },
-
-    deleteByManyIds(ids: string[]) {
-      favoredAccountRepository.softDelete(ids);
-    },
-  };
-};
+    this.favoredAccountRepository.save(accountEntity);
+  }
+}

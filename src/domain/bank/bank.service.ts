@@ -2,13 +2,13 @@ import { Repository } from "typeorm";
 import { getConnection } from "typeorm";
 import { BankEntity } from "../../infrastructure/database/entity/bank.entity";
 
-export const bankService = () => {
-  const bankRepository: Repository<BankEntity> =
-    getConnection().getRepository(BankEntity);
+export class BankService {
+  private bankRepository: Repository<BankEntity>;
 
-  return {
-    find() {
-      return bankRepository.find();
-    },
-  };
-};
+  constructor() {
+    this.bankRepository = getConnection().getRepository(BankEntity);
+  }
+  find() {
+    return this.bankRepository.find();
+  }
+}

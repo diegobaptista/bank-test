@@ -1,13 +1,13 @@
 import { Request, ResponseToolkit, ServerRoute } from "@hapi/hapi";
 import Joi from "joi";
-import { favoredAccountService } from "../../domain/favored-account/favored-account.service";
+import { FavoredAccountService } from "../../domain/favored-account/favored-account.service";
 import {
   FavoredAccountCreateUpdateDto,
   favoredAccountCreateValidationSchema,
 } from "./favored-account-create.dto";
 
 export const favoredAccountController = (): Array<ServerRoute> => {
-  const service = favoredAccountService();
+  const service = new FavoredAccountService();
 
   return [
     {

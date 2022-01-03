@@ -1,11 +1,10 @@
 import { Request, ResponseToolkit, ServerRoute } from "@hapi/hapi";
+import { AuthService } from "../../domain/auth/auth.service";
 
 import { LoginDto, loginValidationSchema } from "./login.dto";
 
-import { authService } from "../../domain/auth/auth.service";
-
 export const authController = (): Array<ServerRoute> => {
-  const service = authService();
+  const service = new AuthService();
 
   return [
     {

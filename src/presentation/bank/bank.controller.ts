@@ -1,8 +1,8 @@
 import { Request, ResponseToolkit, ServerRoute } from "@hapi/hapi";
-import { bankService } from "../../domain/bank/bank.service";
+import { BankService } from "../../domain/bank/bank.service";
 
 export const bankController = (): Array<ServerRoute> => {
-  const service = bankService();
+  const service = new BankService();
 
   return [
     {
