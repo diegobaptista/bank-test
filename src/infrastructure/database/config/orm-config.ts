@@ -28,12 +28,7 @@ const ormConfig = {
     entitiesDir: "src/infrastructure/database/entity",
     migrationsDir: "src/infrastructure/database/migration",
   },
-  ssl: true,
-  extra: {
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  },
+  ...sslConfig,
 };
 
 export default ormConfig;
