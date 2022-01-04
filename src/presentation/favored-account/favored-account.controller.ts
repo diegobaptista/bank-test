@@ -5,7 +5,10 @@ import {
   FavoredAccountCreateUpdateDto,
   favoredAccountCreateValidationSchema,
 } from "./favored-account-create.dto";
-import { FavoredAccountFilterDto } from "./favored-account-filter.dto";
+import {
+  FavoredAccountFilterDto,
+  favoredFilterSchema,
+} from "./favored-account-filter.dto";
 
 export const favoredAccountController = (): Array<ServerRoute> => {
   const service = new FavoredAccountService();
@@ -16,6 +19,12 @@ export const favoredAccountController = (): Array<ServerRoute> => {
       path: "/favored-account",
       options: {
         tags: ["api"],
+        validate: {
+          query: favoredFilterSchema,
+          failAction(request: Request, h: ResponseToolkit, err?: Error) {
+            throw err;
+          },
+        },
       },
 
       handler: (request: Request, h: ResponseToolkit, err?: Error) => {

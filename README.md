@@ -5,12 +5,14 @@
 ### Related Technologies
 
 - Typescript
+- Node
 - Hapi
 - Swagger
 - Typeorm
 - Joi
 - Postgres
 - Jest
+- JWT
 
 ### About
 
@@ -61,6 +63,7 @@ http://localhost:3000/documentation
 
 ### dotenv example
 
+```
 NODE_ENV=local
 
 DATABASE_HOST="localhost"
@@ -77,3 +80,4 @@ JWT_VALID_IN_SECONDS=14400
 USER_MOCK_USERNAME="test-user"
 USER_MOCK_PASSWORD="@changeme"
 USER_MOCK_EMAIL="test-user@test.com"
+```

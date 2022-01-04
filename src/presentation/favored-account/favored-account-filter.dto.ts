@@ -1,3 +1,5 @@
+import Joi, { ObjectSchema } from "joi";
+
 export class FavoredAccountFilterDto {
   name: string[];
   document: string[];
@@ -25,3 +27,13 @@ export class FavoredAccountFilterDto {
     return field?.split(",");
   }
 }
+
+export const favoredFilterSchema: ObjectSchema<FavoredAccountFilterDto> =
+  Joi.object({
+    name: Joi.string().optional(),
+    document: Joi.string().optional(),
+    agencyCode: Joi.string().optional(),
+    accountCode: Joi.string().optional(),
+    pageIndex: Joi.number().optional(),
+    pageSize: Joi.number().optional(),
+  });
