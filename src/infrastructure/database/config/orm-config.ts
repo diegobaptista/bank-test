@@ -21,7 +21,7 @@ const ormConfig = {
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_NAME,
   synchronize: false,
-  logging: false,
+  logging: true,
   entities: ["src/infrastructure/database/entity/**/*.ts"],
   migrations: ["src/infrastructure/database/migration/**/*.ts"],
   cli: {

@@ -6,7 +6,9 @@ import {
   FavoredAccountEntity,
 } from "../../infrastructure/database/entity/favored-account.entity";
 import { FavoredEntity } from "../../infrastructure/database/entity/favored.entity";
+import { OptionalFilter } from "../../infrastructure/database/optiontal-filter";
 import { FavoredAccountCreateUpdateDto } from "../../presentation/favored-account/favored-account-create.dto";
+import { FavoredAccountFilterDto } from "../../presentation/favored-account/favored-account-filter.dto";
 import { BankValidator } from "./bank-validator/bank-validator";
 
 export class FavoredAccountService {
@@ -26,8 +28,33 @@ export class FavoredAccountService {
     this.favoredRepository = getConnection().getRepository(FavoredEntity);
   }
 
-  find() {
-    return this.favoredAccountRepository.find();
+  find(filter: FavoredAccountFilterDto) {
+    const { accountCode, agencyCode, document, name, pageIndex, pageSize } =
+      filter;
+
+    console.log(filter);
+
+    return this.favoredAccountRepository
+      .createQueryBuilder("favored_account")
+      .leftJoinAndSelect("favored_account.owner", "owner")
+      .leftJoinAndSelect("favored_account.agency", "agency")
+      .where(
+        OptionalFilter(
+          "favored_account.code IN (:...accountCode)",
+          accountCode
+        ),
+        { accountCode }
+      )
+      .andWhere(OptionalFilter("agency.code IN (:...agencyCode)", agencyCode), {
+        agencyCode,
+      })
+      .andWhere(OptionalFilter("owner.name IN (:...name)", name), { name })
+      .andWhere(OptionalFilter("owner.document IN (:...document)", document), {
+        document,
+      })
+      .skip(pageIndex)
+      .take(pageSize)
+      .getMany();
   }
 
   async create(favoredAccountDto: FavoredAccountCreateUpdateDto) {

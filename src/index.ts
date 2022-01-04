@@ -7,11 +7,15 @@ import { connect } from "./infrastructure/database/config/connection";
 import Swagger from "./infrastructure/swagger";
 import { controllers } from "./presentation/routes";
 import dotenv from "dotenv";
+import QueryString from "qs";
 dotenv.config();
 
 const init = async () => {
   const server: Server = new Server({
     port: process.env.PORT || 3000,
+    query: {
+      parser: (query) => QueryString.parse(query),
+    },
   });
 
   await connect();

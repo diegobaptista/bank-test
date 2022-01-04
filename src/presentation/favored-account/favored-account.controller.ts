@@ -5,6 +5,7 @@ import {
   FavoredAccountCreateUpdateDto,
   favoredAccountCreateValidationSchema,
 } from "./favored-account-create.dto";
+import { FavoredAccountFilterDto } from "./favored-account-filter.dto";
 
 export const favoredAccountController = (): Array<ServerRoute> => {
   const service = new FavoredAccountService();
@@ -16,8 +17,10 @@ export const favoredAccountController = (): Array<ServerRoute> => {
       options: {
         tags: ["api"],
       },
+
       handler: (request: Request, h: ResponseToolkit, err?: Error) => {
-        return service.find();
+        const filterOrder = FavoredAccountFilterDto.fromQuery(request.query);
+        return service.find(filterOrder);
       },
     },
     {
@@ -72,13 +75,15 @@ export const favoredAccountController = (): Array<ServerRoute> => {
     },
     {
       method: "DELETE",
-      path: "/favored-account",
+      path: "/favored-account/{id}",
       options: {
         tags: ["api"],
       },
       handler: (request: Request, h: ResponseToolkit, err?: Error) => {
-        console.log(request.payload);
-        return "ok";
+        const id = <string>request.params.id;
+        service.delete(id);
+
+        return h.response().code(201);
       },
     },
   ];
