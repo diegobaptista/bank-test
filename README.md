@@ -66,6 +66,8 @@ http://localhost:3000/documentation
 
 `Bearer TOKENTOKENTOKENTOKENTOKENTOKENTOKENTOKENTOKEN`
 
+5. And don't forget to run request in HTTPS mode in swagger
+
 ### I suggest that you download too
 
 - Postman or Insomnia (Test endpoints)
