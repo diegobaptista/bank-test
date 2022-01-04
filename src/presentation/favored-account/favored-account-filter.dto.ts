@@ -9,8 +9,6 @@ export class FavoredAccountFilterDto {
   pageSize: number;
 
   static fromQuery(query) {
-    console.log(query);
-
     const filterOrder = new FavoredAccountFilterDto();
 
     filterOrder.name = this.parseToArray(query.name);

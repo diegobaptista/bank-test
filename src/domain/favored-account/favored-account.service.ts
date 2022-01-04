@@ -18,21 +18,31 @@ export class FavoredAccountService {
   private favoredRepository: Repository<FavoredEntity>;
 
   constructor() {
-    this.favoredAccountRepository =
-      getConnection().getRepository(FavoredAccountEntity);
+    this.favoredAccountRepository = this.getFavoredAccountRepository();
+    this.bankRepository = this.getBankRepository();
+    this.agencyRepository = this.getAgencyRepository();
+    this.favoredRepository = this.getFavoredRepository();
+  }
 
-    this.bankRepository = getConnection().getRepository(BankEntity);
+  getFavoredAccountRepository() {
+    return getConnection().getRepository(FavoredAccountEntity);
+  }
 
-    this.agencyRepository = getConnection().getRepository(AgencyEntity);
+  getAgencyRepository() {
+    return getConnection().getRepository(AgencyEntity);
+  }
 
-    this.favoredRepository = getConnection().getRepository(FavoredEntity);
+  getFavoredRepository() {
+    return getConnection().getRepository(FavoredEntity);
+  }
+
+  getBankRepository() {
+    return getConnection().getRepository(BankEntity);
   }
 
   find(filter: FavoredAccountFilterDto) {
     const { accountCode, agencyCode, document, name, pageIndex, pageSize } =
       filter;
-
-    console.log(filter);
 
     return this.favoredAccountRepository
       .createQueryBuilder("favored_account")
@@ -157,8 +167,7 @@ export class FavoredAccountService {
   private async findAccountByDocumentAgencyBank(
     favoredAccountDto: FavoredAccountCreateUpdateDto
   ) {
-    const { bankCode, agencyCode, accountCode, document, documentType } =
-      favoredAccountDto;
+    const { bankCode, agencyCode, accountCode } = favoredAccountDto;
 
     return await this.favoredAccountRepository.findOne(
       {

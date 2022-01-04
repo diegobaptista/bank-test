@@ -61,7 +61,6 @@ export const favoredAccountController = (): Array<ServerRoute> => {
         const payload = <FavoredAccountCreateUpdateDto>request.payload;
         const id = <string>request.params.id;
 
-        console.log(id);
         try {
           await service.update(payload, id);
         } catch (err) {

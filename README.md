@@ -45,7 +45,9 @@ $ sudo docker-compose up -d
 http://localhost:3000/documentation
 ```
 
-6. You need to login to get an token
+### Testing API
+
+1. You need to login to get an token
 
 {{host}}/auth
 
@@ -55,6 +57,14 @@ http://localhost:3000/documentation
     "password": "@changeme"
 }
 ```
+
+2. Get token property returned
+
+3. To test in Swagger you need to click on big button `Authorization`
+4. Paste the code, but before you need to digit Bearer
+   Ex:
+
+`Bearer TOKENTOKENTOKENTOKENTOKENTOKENTOKENTOKENTOKEN`
 
 ### I suggest that you download too
 

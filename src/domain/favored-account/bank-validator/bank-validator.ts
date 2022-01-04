@@ -16,8 +16,6 @@ export class BankValidator {
     const isAccountValid = this.validateAccount();
     const isAccountTypeValid = this.validateAccountType();
 
-    console.log(isAgencyValid, isAccountValid, isAccountTypeValid);
-
     return isAgencyValid && isAccountValid && isAccountTypeValid;
   }
 
