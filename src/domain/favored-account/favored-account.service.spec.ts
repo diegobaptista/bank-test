@@ -16,6 +16,7 @@ const createFavoredMock: FavoredAccountCreateUpdateDto = {
   accountType: AccountType.CURRENT,
 };
 
+//TODO: Finish all cenarios
 describe("Create favored account", () => {
   it("Should throw account already exists", async () => {
     const service = new FavoredAccountServiceMock();
